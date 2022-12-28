@@ -11,7 +11,7 @@ export default function Welcome({navigation}) {
 					<Text style={{marginBottom: 20}}><Text style={{fontWeight: '700'}}>Thank you</Text> for your submission!</Text>
 					<Text>We appreciate your joint effort in creating a safe work enviroment for everyone!</Text>
 				</View>
-				<View>
+				{/* <View>
 					<Text style={{
 						backgroundColor: 'cyan', 
 						margin: 5, 
@@ -22,7 +22,7 @@ export default function Welcome({navigation}) {
 					}}
 					onPress={() => navigation.navigate('Module')}
 					>Submit</Text>
-				</View>
+				</View> */}
 			</View>
 		</ScrollView>
   );

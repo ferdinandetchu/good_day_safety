@@ -1,9 +1,12 @@
 import { StyleSheet, ScrollView, Text, View } from 'react-native';
 import {Icon} from 'react-native-elements'
 
+import { UserContext } from '../App'
+import { useContext } from 'react';
+
 
 export default function FinalPage({navigation}) {
-
+	const {user, setUser} = useContext(UserContext)
   return (
 		<ScrollView>
 			<View style={{flexDirection: 'row', justifyContent: 'space-between', margin: 20}}>
@@ -11,10 +14,12 @@ export default function FinalPage({navigation}) {
 			</View>
 			<View style={styles.container}>
 				<Text style={{marginBottom: 20}}>Please confirm your response:</Text>
-				<Text>1. Can you make this a <Text style={{fontWeight: '700'}}>safe condition:</Text> Yes</Text>
-				<Text>2. <Text style={{fontWeight: '700'}}>Project Location:</Text> 10</Text>
-				<Text>3. <Text style={{fontWeight: '700'}}>Unsafe Conditions:</Text> Electrical</Text>
-				<Text>4. <Text style={{fontWeight: '700'}}>Comments:</Text> Exposed cabels lying around</Text>
+				<Text>1. Can you make this a <Text style={{fontWeight: '700'}}>safe condition:</Text> {user.data.favorite ? 'Yes' : 'No'}</Text>
+				<Text>2. <Text style={{fontWeight: '700'}}>Project Name:</Text> {user.data.location.projectName}</Text>
+				<Text style={{paddingLeft: 10}}> <Text style={{fontWeight: '700'}}>Floor Level:</Text> {user.data.location.floorLevel}</Text>
+				<Text style={{paddingLeft: 10}}> <Text style={{fontWeight: '700'}}>Location Area:</Text> {user.data.location.locationArea}</Text>
+				<Text>3. <Text style={{fontWeight: '700'}}>Unsafe Conditions:</Text> {user.data.condition}</Text>
+				<Text>4. <Text style={{fontWeight: '700'}}>Comments:</Text> {user.data.comments}</Text>
 				<View>
 					<Text style={{
 						backgroundColor: 'cyan', 
@@ -48,7 +53,7 @@ const styles = StyleSheet.create({
     // backgroundColor: '#fff',
     // alignItems: 'center',
     justifyContent: 'center',
-    margin: 60,
+    margin: 30,
 		// height: 450
   },
 	optionContianer: {

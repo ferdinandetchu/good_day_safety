@@ -20,10 +20,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
-    margin: 60,
-    borderWidth: 1,
-		height: 500,
-    borderColor: 'black'
+    width: '90%',
+	height: 500,
   },
 	settingText: {
 		textAlign: 'center',

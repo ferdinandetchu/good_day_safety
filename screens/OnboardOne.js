@@ -1,32 +1,63 @@
 
 import { Button, StyleSheet, ScrollView, Text, TextInput, View } from 'react-native';
+import React, {useState, useContext} from 'react';
+import { UserContext } from '../App'
 import {Icon} from 'react-native-elements'
+import { getFirestore, doc, updateDoc } from "firebase/firestore";
+import { app } from '../firebaseConfig.js'
 
 export default function OnboardOne({navigation}) {
+	const {user, setUser} = useContext(UserContext);
+	const [progress, setProgress] = useState(0)
+	const [codeError, setCodeError] = useState('')
+
+	const handelSelection = async (val) => {
+		setProgress(1)
+		let id = user.id
+			setUser({
+				data: 
+					{
+						comments: "", 
+						condition: "", 
+						favorite: val, 
+						location: null, 
+						photo: ""
+					}, 
+				id: id
+			})
+
+		// Initialize Cloud Firestore and get a reference to the service
+		const db =  await getFirestore(app);
+		try {
+			  const querySnapshot = await (updateDoc(doc(db, "Users", user.id), user.data))
+		  } catch (error) {
+			
+		  }
+		console.log(user)
+	}
   return (
 		<ScrollView>
 			<View style={{flexDirection: 'row', justifyContent: 'space-between', margin: 20}}>
 				<Icon name="arrow-left" size={20} color="#047dd9" type="entypo" onPress={() => navigation.goBack()} />
-				<Icon name="arrow-right" size={20} color="#047dd9" type="entypo" onPress={() => navigation.navigate('OnboardTwo')} />
+				{progress > 0 && 
+					<Button title="Next" onPress={() => navigation.navigate('OnboardTwo')} />
+				}
 			</View>
 			<View style={styles.container}>
 				<Text>1. Can you make this a <Text style={{fontWeight: 'bold'}}>SAFE</Text> condition? *</Text>
 				<Text style={{fontSize: 10, color: 'grey', paddingTop: 10}}>If no please make inaccessible to other and proceed with your report</Text>
 				<View>
-					<View style={styles.optionContianer}>
-						<Text style={styles.optionText} onPress={() => navigation.navigate('OnboardTwo')}>Y</Text>
-						<Text>Yes</Text>
-					</View>
-					<View style={styles.optionContianer}>
-						<Text style={styles.optionText} onPress={() => navigation.navigate('OnboardTwo')}>N</Text>
-						<Text>No</Text>
-					</View>
+					<Text style={styles.optionContianer} onPress={() => handelSelection(true)}>Yes</Text>
+					<Text style={styles.optionContianer} onPress={() => handelSelection(false)}>No</Text>
 				</View>
 			</View>
 			<View style={{margin: 20}}>
-				<Text>1 of 5 Answers</Text>
+				<Text>{progress} of 5 Answers</Text>
 				<View style={styles.progressContainer}>
-					<View style={styles.progressOne}></View>
+					{progress > 0 && 
+						<View style={styles.progressOne}></View>
+					}
+					
 					<View style={styles.progressOthers}></View>
 					<View style={styles.progressOthers}></View>
 					<View style={styles.progressOthers}></View>
@@ -57,7 +88,8 @@ const styles = StyleSheet.create({
 		padding: 8,
 		margin: 10,
 		borderWidth: 1,
-		borderColor: 'black'
+		borderColor: 'black',
+		borderRadius: 5
 	},
 	optionText: {
 		backgroundColor: 'white', 

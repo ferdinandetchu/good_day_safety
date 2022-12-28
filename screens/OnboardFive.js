@@ -1,20 +1,74 @@
 import { Button, StyleSheet, ScrollView, Text, TextInput, View } from 'react-native';
 import {Icon} from 'react-native-elements'
 
+import { useState, useContext, useEffect} from 'react';
+import { UserContext } from '../App'
+import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
+import { app } from '../firebaseConfig.js'
+
 
 export default function OnboardFive({navigation}) {
+	const {user, setUser} = useContext(UserContext);
+	const [progress, setProgress] = useState(4);
+	const [comments, setComments] = useState('')
+	const [data, setData] = useState(null)
 
+	const handelCommentsSubmit = async () => {
+		let id = user.id
+		if(comments.length > 0){
+			 // Initialize Cloud Firestore and get a reference to the service
+			 const db =  await getFirestore(app);
+			 try {
+					 const querySnapshot = (getDoc(doc(db, "Users", user.id)))
+					 .then((doc) => {
+						 if(doc.data()){
+							//  setData(doc.data())
+							setUser({id: doc.id, data: doc.data()})
+						 }else{
+							 setCodeError('Invalide invite code')
+						 }
+					 });
+			 } catch (error) {
+				 console.log(error)
+			 }
+			setUser({
+				data: 
+					{
+						comments: comments, 
+						condition: user.data.condition, 
+						favorite: user.data.favorite, 
+						location: user.data.location, 
+						photo: user.data.photo
+					}, 
+				id: id
+			})
+			try {
+			  const querySnapshot = await (updateDoc(doc(db, "Users", user.id), user.data))
+				setProgress(5)
+		  } catch (error) {
+				console.log(error)
+		  }
+			console.log(user)
+		}else{
+			setProgress(4)
+		}
+	}
+
+	useEffect(()=> {handelCommentsSubmit()}, [comments])
   return (
 		<ScrollView>
 			<View style={{flexDirection: 'row', justifyContent: 'space-between', margin: 20}}>
 				<Icon name="arrow-left" size={20} color="#047dd9" type="entypo" onPress={() => navigation.goBack()} />
-				<Icon name="arrow-right" size={20} color="#047dd9" type="entypo" onPress={() => navigation.navigate('FinalPage')} />
+				{/* <Icon name="arrow-right" size={20} color="#047dd9" type="entypo" onPress={() => navigation.navigate('FinalPage')} /> */}
+				{progress == 5  && 
+					<Button title="Next" onPress={() => navigation.navigate('FinalPage')} />
+				}
 			</View>
 			<View style={styles.container}>
 				<Text>5. Please include any necessary comments you may have about the unsafe condition?</Text>
 				<View>
 					<View>
-						<TextInput style={{ borderWidth: 1, borderColor: 'black', marginTop: 10 }} maxLength={250} multiline />
+						<TextInput value={comments} onChangeText={text => setComments(text)} style={{ borderWidth: 1, borderColor: 'black', marginTop: 10 }} maxLength={250} multiline />
 					</View>
 					<View style={{flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}>
 						<Text>250 Characters Max</Text>
@@ -22,9 +76,11 @@ export default function OnboardFive({navigation}) {
 				</View>
 			</View>
 			<View style={{margin: 20}}>
-				<Text>5 of 5 Answers</Text>
+				<Text>{progress} of 5 Answers</Text>
 				<View style={styles.progressContainer}>
-					<View style={styles.progressOne}></View>
+				{progress == 5 && 
+						<View style={styles.progressOne}></View>
+					}
 					<View style={styles.progressOne}></View>
 					<View style={styles.progressOne}></View>
 					<View style={styles.progressOne}></View>
