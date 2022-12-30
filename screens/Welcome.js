@@ -1,47 +1,54 @@
 
-import { Button, StyleSheet, ScrollView, Text, TextInput, View } from 'react-native';
-import InviteInput from '../components/InviteInput.js'
+import { TouchableOpacity, StyleSheet, Text, View } from 'react-native';
 
 export default function Welcome({navigation}) {
   return (
-		<ScrollView>
+		<View style={styles.column}>
 			<View style={styles.container}>
 				<Text style={styles.topText}>GOOD DAY SAFETY APPLICATION!</Text>
 				<View style={{color: 'black'}}>
-					<Text style={{marginBottom: 20}}><Text style={{fontWeight: '700'}}>Thank you</Text> for your submission!</Text>
-					<Text>We appreciate your joint effort in creating a safe work enviroment for everyone!</Text>
+					<Text style={{marginBottom: 20, fontSize: 20, textAlign: 'center'}}><Text style={{fontWeight: '700'}}>Thank you</Text> for your submission!</Text>
+					<Text style={{fontSize: 20, textAlign: 'center'}}>We appreciate your joint effort in creating a safe work enviroment for everyone!</Text>
 				</View>
-				{/* <View>
-					<Text style={{
-						backgroundColor: 'cyan', 
-						margin: 5, 
-						padding: 10, 
-						borderRadius: 10,
-						fontWeight: '700',
-						textAlign: 'center'
-					}}
-					onPress={() => navigation.navigate('Module')}
-					>Submit</Text>
-				</View> */}
+				
 			</View>
-		</ScrollView>
+
+			<TouchableOpacity onPress={() => navigation.navigate('Signin')}>
+				<Text style={{
+					backgroundColor: '#053095', 
+					margin: 20, 
+					padding: 10,
+					color: 'white',
+					borderRadius: 4,
+					fontWeight: '700',
+					textAlign: 'center'
+				}}
+				>Submit Another</Text>
+			</TouchableOpacity>
+		</View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: '#fff',
-    // alignItems: 'center',
-    justifyContent: 'center',
-    margin: 60
+    justifyContent: 'flex-start',
+		alignItems: 'stretch',
+		margin: 20,
   },
+	column: {
+		flex: 1,
+		justifyContent: 'space-around',
+		paddingVertical: '10%',
+		backgroundColor: 'white'
+	},
 
   topText: {
-    color: 'red',
+    color: '#053095',
     textAlign: 'center',
-    fontSize: 30,
+    fontSize: 25,
     fontWeight: 'bold',
-    marginBottom: 20
-  }
+    marginBottom: 20,
+    marginTop: 80
+  },
 });

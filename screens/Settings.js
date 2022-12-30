@@ -1,6 +1,6 @@
 
-import { StyleSheet, ScrollView, Text, View, Modal, Button} from 'react-native';
-import { useState } from 'react'
+import { StyleSheet, ScrollView, Text, View, Modal, TouchableOpacity} from 'react-native';
+import { useState, useEffect } from 'react'
 
 export default function Settings ({navigation}) {
 	const [inviteId, setinviteId] = useState(false);
@@ -57,50 +57,25 @@ export default function Settings ({navigation}) {
 		}
 	}
 
+	useEffect(() => {
+    // Use `setOptions` to update the button that we previously specified
+    // Now the button includes an `onPress` handler to update the count
+    navigation.setOptions({
+      headerRight: () => (
+				<TouchableOpacity onPress={() => navigation.navigate('Module')} style={{paddingHorizontal: 20, paddingVertical: 5, borderRadius: 30, backgroundColor: '#053095'}}>
+        	<Text style={{color: 'white'}}>Report</Text>
+				</TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
 
   return (
 		<ScrollView>
-			<Text style={styles.settingText}>Settings</Text>
 			<View style={styles.container}>
-				<View>
-					<View style={styles.moduleCard}>
-						<Text style={styles.cardText} onPress={toggelReportMan}>Report Management</Text>
-					</View>
-					{ reportMan &&
-						<View>
-							<Text style={styles.cardViewText}>View Reports</Text>
-							<Text style={styles.cardViewText}>Delete Reports</Text>
-							<Text style={styles.cardViewText}>Print Reports</Text>
-						</View>
-					}
-
-					<View style={styles.moduleCard}>
-						<Text style={styles.cardText} onPress={toggelSubscribeMan}>Subscription Management</Text>
-					</View>
-					{ subscribeMan &&
-						<View>
-							<Text style={styles.cardViewText}>View Subscription</Text>
-							<Text style={styles.cardViewText}>Change Subscription</Text>
-							<Text style={styles.cardViewText}>Cancel Subscription</Text>
-						</View>
-					}
-
-					<View style={styles.moduleCard}>
-						<Text style={styles.cardText} onPress={toggelModuleMan}>Module Management</Text>
-						<Text></Text>
-					</View>
-					{ moduleMan &&
-						<View>
-							<Text style={styles.cardViewText}>Create Module</Text>
-							<Text style={styles.cardViewText}>Delete Module</Text>
-							<Text style={styles.cardViewText}>Active Module</Text>
-						</View>
-					}
-				</View>
-				<View>
-					<View style={styles.moduleCard}>
-						<Text style={styles.cardText} onPress={toggelInvite}>Invite ID Management</Text>
-					</View>
+				<View style={styles.column}>
+					<TouchableOpacity style={styles.moduleCard} onPress={toggelInvite}>
+						<Text style={styles.cardText}>Invite ID Management</Text>
+					</TouchableOpacity>
 					{ inviteId &&
 						<View>
 							<Text style={styles.cardViewText}>Create ID</Text>
@@ -108,10 +83,12 @@ export default function Settings ({navigation}) {
 							<Text style={styles.cardViewText}>Delete ID</Text>
 						</View>
 					}
+				</View>
 
-					<View style={styles.moduleCard}>
-						<Text style={styles.cardText} onPress={toggelEmailMan}>Email Management</Text>
-					</View>
+				<View style={styles.column}>
+					<TouchableOpacity style={styles.moduleCard} onPress={toggelEmailMan}>
+						<Text style={styles.cardText}>Email Management</Text>
+					</TouchableOpacity>
 					{ emailMan &&
 						<View>
 							<Text style={styles.cardViewText}>Create Email</Text>
@@ -119,17 +96,6 @@ export default function Settings ({navigation}) {
 							<Text style={styles.cardViewText}>Delete Email</Text>
 						</View>
 					}
-
-					{/* <View style={styles.moduleCard}>
-						<Text style={styles.cardText} onPress={toggelUserMan}>User Management</Text>
-					</View>
-					{ userMan &&
-						<View>
-							<Text style={styles.cardViewText}>Kick User</Text>
-							<Text style={styles.cardViewText}>Ban User</Text>
-							<Text style={styles.cardViewText}>Limit User</Text>
-						</View>
-					} */}
 				</View>
 			</View>
 		</ScrollView>
@@ -140,39 +106,31 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
-    margin: 50,
-    borderWidth: 1,
-		// height: 550,
-    borderColor: 'black',
-		justifyContent: 'center'
+    flexWrap: 'wrap',
+    alignItems: 'stretch' // if you want to fill rows left to right
   },
-	settingText: {
-		textAlign: 'center',
-		fontWeight: 'bold',
-		marginTop: 10
-	},
   moduleCard: {
-        borderRadius: 10,
-				width: 125,
-        padding: 10,
-				backgroundColor: '#047dd9',
-        margin: 5,
-				marginBottom: 20,
-				marginTop: 20,
-        height: 100,
-        justifyContent: 'center',
-        alignItems: 'center'
+		paddingVertical: 40,
+    borderRadius: 4,
+    backgroundColor: "#3e62cd",
+		marginVertical: 6,
+		// width: '50%',
+    marginHorizontal: "2%",
   },
+	column: {
+		width: '50%',
+	},
 	cardText: {
 		textAlign: 'center',
 		color: 'white'
 	},
 	cardViewText: {
-		padding: 2,
-		margin: 5,
-		backgroundColor: 'cyan',
-		borderWidth: 1,
-		borderColor: 'black',
+		paddingVertical: 4,
+    borderRadius: 4,
+    backgroundColor: "#053095",
+		marginVertical: 6,
+    marginHorizontal: "2%",
+		color: 'white',
 		textAlign: 'center'
 	}
 });

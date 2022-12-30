@@ -1,53 +1,22 @@
-import { Button, StyleSheet, ScrollView, Text, TextInput, View } from 'react-native';
-import {Icon} from 'react-native-elements'
+import { ActivityIndicator, StyleSheet, TouchableOpacity, Text, TextInput, View } from 'react-native';
 
 import { useState, useContext, useEffect} from 'react';
-import { UserContext } from '../App'
-import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
-import { app } from '../firebaseConfig.js'
+import { UserContext, IsLoading } from '../App'
 
 
 export default function OnboardFive({navigation}) {
 	const {user, setUser} = useContext(UserContext);
 	const [progress, setProgress] = useState(4);
 	const [comments, setComments] = useState('')
-	const [data, setData] = useState(null)
+
+	const {isLoading, setIsLoading} = useContext(IsLoading)
 
 	const handelCommentsSubmit = async () => {
-		let id = user.id
 		if(comments.length > 0){
-			 // Initialize Cloud Firestore and get a reference to the service
-			 const db =  await getFirestore(app);
-			 try {
-					 const querySnapshot = (getDoc(doc(db, "Users", user.id)))
-					 .then((doc) => {
-						 if(doc.data()){
-							//  setData(doc.data())
-							setUser({id: doc.id, data: doc.data()})
-						 }else{
-							 setCodeError('Invalide invite code')
-						 }
-					 });
-			 } catch (error) {
-				 console.log(error)
-			 }
-			setUser({
-				data: 
-					{
-						comments: comments, 
-						condition: user.data.condition, 
-						favorite: user.data.favorite, 
-						location: user.data.location, 
-						photo: user.data.photo
-					}, 
-				id: id
-			})
-			try {
-			  const querySnapshot = await (updateDoc(doc(db, "Users", user.id), user.data))
-				setProgress(5)
-		  } catch (error) {
-				console.log(error)
-		  }
+			setIsLoading(true)
+			setUser({ ...user, data:{...user.data, comments: comments} })
+			setIsLoading(false)
+			setProgress(5)
 			console.log(user)
 		}else{
 			setProgress(4)
@@ -55,51 +24,69 @@ export default function OnboardFive({navigation}) {
 	}
 
 	useEffect(()=> {handelCommentsSubmit()}, [comments])
-  return (
-		<ScrollView>
-			<View style={{flexDirection: 'row', justifyContent: 'space-between', margin: 20}}>
-				<Icon name="arrow-left" size={20} color="#047dd9" type="entypo" onPress={() => navigation.goBack()} />
-				{/* <Icon name="arrow-right" size={20} color="#047dd9" type="entypo" onPress={() => navigation.navigate('FinalPage')} /> */}
-				{progress == 5  && 
-					<Button title="Next" onPress={() => navigation.navigate('FinalPage')} />
-				}
-			</View>
-			<View style={styles.container}>
-				<Text>5. Please include any necessary comments you may have about the unsafe condition?</Text>
+
+	useEffect(() => {
+    // Use `setOptions` to update the button that we previously specified
+    // Now the button includes an `onPress` handler to update the count
+    navigation.setOptions({
+      headerRight: () => (
 				<View>
+					{ (progress == 5) && 
+						<TouchableOpacity onPress={() => navigation.navigate('FinalPage')} style={{paddingHorizontal: 20, paddingVertical: 5, borderRadius: 30, backgroundColor: '#053095'}}>
+							<Text style={{color: 'white'}}>Next</Text>
+						</TouchableOpacity>
+					}
+				</View>
+      ),
+    });
+  }, [progress]);
+
+  return (
+		<View style={styles.column}>
+			<View style={styles.container}>
+				<Text style={{marginVertical: 10}}>5. Please include any necessary comments you may have about the unsafe condition?</Text>
+				<View>
+					{isLoading && <ActivityIndicator color={'#053095'}/> }
 					<View>
-						<TextInput value={comments} onChangeText={text => setComments(text)} style={{ borderWidth: 1, borderColor: 'black', marginTop: 10 }} maxLength={250} multiline />
+						<TextInput value={comments} onChangeText={text => setComments(text)} style={styles.textInput} maxLength={250} multiline />
 					</View>
 					<View style={{flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}>
-						<Text>250 Characters Max</Text>
+						<Text style={{color: 'grey'}}>250 Characters Max</Text>
 					</View>
 				</View>
 			</View>
-			<View style={{margin: 20}}>
-				<Text>{progress} of 5 Answers</Text>
+			<View>
+				<Text style={{marginHorizontal: 10}}>{progress} of 5 Answers</Text>
 				<View style={styles.progressContainer}>
-				{progress == 5 && 
+				<View style={styles.progressOne}></View>
+					<View style={styles.progressOne}></View>
+					<View style={styles.progressOne}></View>
+					<View style={styles.progressOne}></View>
+					{progress == 5 && 
 						<View style={styles.progressOne}></View>
 					}
-					<View style={styles.progressOne}></View>
-					<View style={styles.progressOne}></View>
-					<View style={styles.progressOne}></View>
-					<View style={styles.progressOne}></View>
+					{progress == 4 && 
+						<View style={styles.progressOthers}></View>
+					}
 				</View>
 			</View>
-		</ScrollView>
+		</View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: '#fff',
-    // alignItems: 'center',
-    justifyContent: 'center',
-    margin: 60,
-		// height: 450
+    justifyContent: 'flex-start',
+		alignItems: 'stretch',
+		margin: 20,
   },
+	column: {
+		flex: 1,
+		justifyContent: 'space-around',
+		paddingVertical: '10%',
+		backgroundColor: 'white'
+	},
 	optionContianer: {
 		flex: 1,
 		backgroundColor: 'cyan',
@@ -113,31 +100,37 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		borderColor: 'black'
 	},
-	optionText: {
-		backgroundColor: 'white', 
-		padding: 8,
-		paddingLeft: 13,
-		paddingRight: 13,
-		borderWidth: 1,
-		borderColor: 'black'
-	},
+	textInput: {
+    borderWidth: 1,
+    borderColor: '#3e62cd',
+    width: '100%',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    marginBottom: 20,
+    borderRadius: 30,
+    shadowColor: "black",
+    backgroundColor: '#c2d5f5'
+  },
 	progressContainer: {
 		flex: 1,
 		flexDirection: 'row',
-		borderWidth: 1,
-		borderColor: 'black',
-		backgroundColor: 'white',
-		// padding: 10,
-		// margin: 20
+		backgroundColor: '#c2d5f5',
 	},
 	progressOne: {
-		backgroundColor: '#047dd9',
+		backgroundColor: '#053095',
 		padding: 10,
 		width: '20%'
 	},
 	progressOthers: {
-		backgroundColor: 'white',
+		backgroundColor: '#c2d5f5',
 		padding: 10,
 		width: '20%'
-	}
+	},
+	image: {
+		width: 250,
+    height: 200,
+		borderRadius: 5,
+		marginTop: 10,
+		marginBottom: 10
+	},
 });

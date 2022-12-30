@@ -1,5 +1,5 @@
 import React, {useState, useContext, useEffect} from 'react';
-import {SafeAreaView, Text,  View, StyleSheet} from 'react-native';
+import {SafeAreaView, Text, ActivityIndicator,  View, StyleSheet} from 'react-native';
 import { UserContext } from '../App'
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { app } from '../firebaseConfig.js'
@@ -17,9 +17,13 @@ function InviteInput(prop) {
 
   const {user, setUser} = useContext(UserContext);
   const [codeError, setCodeError] = useState('')
-    const [value, setValue] = useState('');
-    const ref = useBlurOnFulfill({value, cellCount: CELL_COUNT});
-    const [props, getCellOnLayoutHandler] = useClearByFocusCell({
+  const [value, setValue] = useState('');
+
+  const [ isLoading, setIsLoading ] = useState(false)
+
+
+  const ref = useBlurOnFulfill({value, cellCount: CELL_COUNT});
+  const [props, getCellOnLayoutHandler] = useClearByFocusCell({
       value,
       setValue,
     });
@@ -29,20 +33,24 @@ function InviteInput(prop) {
       const db =  await getFirestore(app);
       try {
         if(value.length == 6) {
+          setIsLoading(true)
           const querySnapshot = (getDoc(doc(db, "Users", value)))
           .then((doc) => {
             if(doc.data()){
               setUser({id: doc.id, data: doc.data()})
               prop.navigation.navigate('OnboardOne')
+              setIsLoading(false)
             }else{
               setCodeError('Invalide invite code')
+              setIsLoading(false)
             }
           });
         }else{
           setCodeError('')
         }
       } catch (error) {
-        
+        setIsLoading(false)
+        console.log(error)
       }
      
     }
@@ -52,6 +60,7 @@ function InviteInput(prop) {
     // console.log(value)
   return (
     <View>
+      { isLoading && <ActivityIndicator color={'#3e62cd'} />}
       {codeError &&
         <Text style={styles.errorText}>{codeError}</Text>
       }
@@ -85,17 +94,18 @@ export default InviteInput
 const styles = StyleSheet.create({
   
     root: {
-        padding: 10,
-        justifyContent: 'center',
-        alignItems: "center"
-        // minHeight: 300
+      padding: 10,
+      justifyContent: 'center',
+      alignItems: "center",
+        
+      // minHeight: 300
     },
     title: {
-        textAlign: 'center', 
-        fontSize: 30
+      textAlign: 'center', 
+      fontSize: 30,
     },
     codeFiledRoot: {
-        // marginTop: 20
+      // marginTop: 20
     },
     cell: {
       width: 40,
@@ -103,8 +113,11 @@ const styles = StyleSheet.create({
       lineHeight: 38,
       fontSize: 24,
       borderWidth: 1,
-      borderColor: '#000000',
+      borderColor: 'white',
       textAlign: 'center',
+      borderRadius: 5,
+      backgroundColor: '#c2d5f5',
+      margin: 2
     },
     focusCell: {
       borderColor: '#000',

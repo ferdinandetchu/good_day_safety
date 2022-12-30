@@ -1,8 +1,8 @@
 
-import { Button, StyleSheet, ScrollView, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, ScrollView, TouchableOpacity, Text, TextInput, View } from 'react-native';
 import InviteInput from '../components/InviteInput.js';
 import { useState, useContext } from 'react';
-import { UserContext } from '../App'
+import { IsLoading, UserContext } from '../App'
 
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
@@ -15,16 +15,21 @@ export default function Signin({navigation}) {
   const [password, setPassword] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
 
+  const {isLoading, setIsLoading} = useContext(IsLoading)
+
   const handelSignIn = () => {
+    setIsLoading(true)
     const auth = getAuth(app);
     signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       // Signed in 
       setUser(userCredential.user);
+      setIsLoading(false)
       navigation.navigate('Module')
       // ...
     })
     .catch((error) => {
+      setIsLoading(false)
       let errorCode = error.code;
       errorCode = error.code.split('/')
       setErrorMessage(errorCode[1]);
@@ -32,38 +37,23 @@ export default function Signin({navigation}) {
     });
   }
   
-  const handelPinSignIn = async () => {
-    // Initialize Cloud Firestore and get a reference to the service
-    const db =  await getFirestore(app);
-    const querySnapshot = await getDocs(collection(db, "Users"));
-    querySnapshot.forEach((doc) => {
-      console.log(`${doc.id} => ${doc.data()}`);
-    });
-    // console.log(querySnapshot)
-  }
-  // handelPinSignIn()
-  // console.log(email)
   return (
-		<ScrollView>
+		<ScrollView style={{backgroundColor: 'white',}}>
+      <View style={{justifyContent: 'center'}}>
 			<View style={styles.container}>
 				<Text style={styles.topText}>GOOD DAY SAFETY APPLICATION!</Text>
-				{/* <Text style={styles.signinText}>SIGN IN</Text> */}
+        {isLoading && <ActivityIndicator color={'#053095'}/> }
         {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text> }
 				<TextInput keyboardType="email-address" style={styles.textInput} value={email} placeholder="Email" onChangeText={tetx => setEmail(tetx)} />
-				{/* <Text style={styles.labelText}>Password</Text> */}
 				<TextInput secureTextEntry style={styles.textInput} value={password} placeholder="Password" onChangeText={tetx => setPassword(tetx)} />
-				<View style={styles.signUpBtn}>
-					<Button title="LOGIN" onPress={handelSignIn} />
-				</View>
-				{/* <View style={styles.signUpBtn}>
-					<Button color='red' title="Sign Up" onPress={() =>
-						navigation.navigate('Signup') } 
-					/>
-				</View> */}
+				<TouchableOpacity style={styles.loginBtn} onPress={handelSignIn}>
+          <Text style={{color: "white"}}>LOGIN</Text>
+				</TouchableOpacity>
 				<Text style={styles.orText}>OR</Text>
 				<Text>Enter Invitation Code</Text>
 				<InviteInput navigation={navigation} />
 			</View>
+      </View>
 		</ScrollView>
   );
 }
@@ -72,20 +62,26 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
+    marginHorizontal: 35,
   },
   topText: {
-    color: 'red',
+    color: '#053095',
     textAlign: 'center',
     fontSize: 25,
     fontWeight: 'bold',
-    margin: 20,
-    marginBottom: 70
+    marginBottom: 20,
+    marginTop: 80
   },
   textInput: {
     borderWidth: 1,
-    width: '75%',
-    padding: 4,
-    marginBottom: 10
+    borderColor: '#3e62cd',
+    width: '100%',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    marginBottom: 20,
+    borderRadius: 30,
+    shadowColor: "black",
+    backgroundColor: '#c2d5f5'
   },
   errorText: {
     color: 'red',
@@ -102,5 +98,14 @@ const styles = StyleSheet.create({
   orText: {
     marginTop: 20,
     fontWeight: 'bold',
+  },
+  loginBtn: {
+    backgroundColor: '#053095',
+    textAlign: 'center',
+    borderRadius: 30,
+    paddingHorizontal: 120,
+    paddingVertical: 10,
+    color: 'white'
+    // width: 200
   }
 });

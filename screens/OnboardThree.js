@@ -1,16 +1,13 @@
 
-import { Button, StyleSheet, SafeAreaView, FlatList, Text, TextInput, View } from 'react-native';
-import {Icon} from 'react-native-elements'
-import React, {useState, useContext} from 'react';
-import { UserContext } from '../App'
-import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
-import { app } from '../firebaseConfig.js'
+import { ActivityIndicator, StyleSheet, TouchableOpacity, FlatList, Text, View } from 'react-native';
+import React, {useState, useEffect, useContext} from 'react';
+import { UserContext, IsLoading } from '../App'
 
 
 export default function OnboardThree({navigation}) {
 	const {user, setUser} = useContext(UserContext);
 	const [progress, setProgress] = useState(2);
-	const [selectionIndex, setSelectionIndex] = useState('')
+	const [selectionIndex, setSelectionIndex] = useState(7)
 	const [select, setSelection] = useState([
 		'Vehicle, Machine or Tool', 
 		'Electrical', 
@@ -26,80 +23,71 @@ export default function OnboardThree({navigation}) {
 		'Other - Describe in comments section'
 	])
 
-	const handelSelection = async (Value, i) => {
-		let id = user.id;
-		setSelectionIndex(i)
-		if(user){
+	const {isLoading, setIsLoading} = useContext(IsLoading)
+
+	const handelSelection = async (i) => {
+		setIsLoading(true)
+		if(i){
+			let condition = select[i]
+			let data = await { ...user.data, condition: condition, };
+			setUser({ ...user, data:data })
+
 			setProgress(3)
-			 // Initialize Cloud Firestore and get a reference to the service
-			 const db =  await getFirestore(app);
-			 try {
-					 const querySnapshot = (getDoc(doc(db, "Users", user.id)))
-					 .then((doc) => {
-						 if(doc.data()){
-							 setUser({id: doc.id, data: doc.data()})
-						 }else{
-							 setCodeError('Invalide invite code')
-						 }
-					 });
-			 } catch (error) {
-				 console.log(error)
-			 }
-			 setUser({
-				data: 
-					{
-						comments: "", 
-						condition: Value, 
-						favorite: user.data.favorite, 
-						location: user.data.location, 
-						photo: ""
-					}, 
-				id: id
-			})
-			try {
-			  const querySnapshot = await (updateDoc(doc(db, "Users", user.id), user.data))
-		  } catch (error) {
-			
-		  }
+			setIsLoading(false)
 			console.log(user)
 		}else{
 			setProgress(2)
 		}
 	}
+
+	useEffect(() => {handelSelection(selectionIndex)}, [selectionIndex])
+
+	useEffect(() => {
+    // Use `setOptions` to update the button that we previously specified
+    // Now the button includes an `onPress` handler to update the count
+    navigation.setOptions({
+      headerRight: () => (
+				<View>
+					{ (progress == 3) && 
+						<TouchableOpacity onPress={() => navigation.navigate('OnboardFour')} style={{paddingHorizontal: 20, paddingVertical: 5, borderRadius: 30, backgroundColor: '#053095'}}>
+							<Text style={{color: 'white'}}>Next</Text>
+						</TouchableOpacity>
+					}
+				</View>
+      ),
+    });
+  }, [progress]);
 	// console.log(select)
   return (
-		<View style={styles.container}>
-			<View style={{flexDirection: 'row', justifyContent: 'space-between', margin: 20}}>
-				<Icon name="arrow-left" size={20} color="#047dd9" type="entypo" onPress={() => navigation.goBack()} />
-				{/* <Icon name="arrow-right" size={20} color="#047dd9" type="entypo" onPress={() => navigation.navigate('OnboardFour')} /> */}
-				{progress == 3  && 
-					<Button title="Next" onPress={() => navigation.navigate('OnboardFour')} />
-				}
-			</View>
-			<View>
+		<View style={styles.column}>
+			<View style={styles.container}>
 				<Text style={{marginBottom: 20}}>3. Please select below the unsafe condition?</Text>
 				{/* <Text style={{fontSize: 10, color: 'grey', paddingTop: 10}}>If no please make inaccessible to other and proceed with your report</Text> */}
-				
+				{isLoading && <ActivityIndicator color={'#053095'}/> }
 				<View style={styles.flatList}>
 					<FlatList
 						data={select}
 						renderItem={({item, index}) => (
-							<View>
-								<Text style={ (selectionIndex === index)? styles.selected :  styles.itemConteianer } onPress={() => handelSelection(item, index)} key={index}>{item}</Text>
-							</View>
+							<TouchableOpacity onPress={() => setSelectionIndex(index)}>
+								<Text style={ (selectionIndex === index)? styles.selected :  styles.itemConteianer } key={index}>{item}</Text>
+								{/* {console.log(index)} */}
+							</TouchableOpacity>
 						)}
 						keyExtractor={item => item}
 					/>
 				</View>
 			</View>
-			<View style={{marginTop: 20}}>
-				<Text>{progress} of 5 Answers</Text>
+			<View>
+				<Text style={{margin: 10}}>{progress} of 5 Answers</Text>
 				<View style={styles.progressContainer}>
-					{progress == 3 && 
-						<View style={styles.progressOne}></View>
-					}
 					<View style={styles.progressOne}></View>
 					<View style={styles.progressOne}></View>
+						{progress == 3 && 
+							<View style={styles.progressOne}></View>
+						}
+						{progress == 2 && 
+							<View style={styles.progressOthers}></View>
+						}
 					<View style={styles.progressOthers}></View>
 					<View style={styles.progressOthers}></View>
 				</View>
@@ -109,30 +97,38 @@ export default function OnboardThree({navigation}) {
 }
 
 const styles = StyleSheet.create({
-	container:{
-		marginLeft: 30,
-		marginRight: 30,
+	container: {
+    flex: 1,
+    justifyContent: 'flex-start',
+		alignItems: 'stretch',
+		margin: 20,
+  },
+	column: {
+		flex: 1,
+		justifyContent: 'space-around',
+		paddingVertical: '10%',
+		backgroundColor: 'white'
 	},
 
 	progressContainer: {
 		flex: 1,
 		flexDirection: 'row',
-		backgroundColor: 'white',
+		backgroundColor: '#c2d5f5',
 	},
 	progressOne: {
-		backgroundColor: '#047dd9',
+		backgroundColor: '#053095',
 		padding: 10,
 		width: '20%'
 	},
 	progressOthers: {
-		backgroundColor: 'white',
+		backgroundColor: '#c2d5f5',
 		padding: 10,
 		width: '20%'
 	},
 	itemConteianer: {
 		borderWidth: 1,
-		borderColor: 'blue',
-		borderRadius: 5,
+		borderColor: '#3e62cd',
+		borderRadius: 4,
 		padding: 5,
 		margin: 5
 	},
@@ -140,11 +136,11 @@ const styles = StyleSheet.create({
 		height: 300,
 	},
 	selected: {
-		backgroundColor: '#a7d4f1',
+		backgroundColor: '#c2d5f5',
 		borderWidth: 1,
-		borderColor: 'blue',
+		borderColor: '#3e62cd',
 		padding: 5,
 		margin: 5,
-		borderRadius: 5,
+		borderRadius: 4,
 	}
 });
