@@ -1,5 +1,5 @@
 
-import { StyleSheet, TouchableOpacity, ActivityIndicator, Text, TextInput, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, ActivityIndicator, Text, TextInput, View, ScrollView } from 'react-native';
 import React, {useState, useContext, useEffect} from 'react';
 import { UserContext, IsLoading } from '../App'
 
@@ -47,34 +47,36 @@ export default function OnboardTwo({navigation}) {
   }, [progress]);
 
   return (
-		<View style={styles.column}>
-			<View style={styles.container}>
-				<Text style={{marginVertical: 10}}>2. Please specify the location of the Unsafe condition?</Text>
-				{isLoading && <ActivityIndicator color={'#053095'}/> }
-				<View>
-					<TextInput placeholder='Project Name' value={projectName} onChangeText={text => setProjectName(text)} style={styles.inputField} />
+		<ScrollView>
+			<View style={styles.column}>
+				<View style={styles.container}>
+					<Text style={{marginVertical: 10}}>2. Please specify the location of the Unsafe condition?</Text>
+					{isLoading && <ActivityIndicator color={'#053095'}/> }
+					<View>
+						<TextInput placeholder='Project Name' value={projectName} onChangeText={text => setProjectName(text)} style={styles.inputField} />
 
-					<TextInput placeholder='Floor Level' keyboardType="number-pad" value={floorLevel} onChangeText={text => setFloorLevel(text)} style={styles.inputField} />
+						<TextInput placeholder='Floor Level' keyboardType="number-pad" value={floorLevel} onChangeText={text => setFloorLevel(text)} style={styles.inputField} />
 
-					<TextInput placeholder='Location Area' value={locationArea} onChangeText={text => setLocationArea(text)} style={styles.inputField} />
+						<TextInput placeholder='Location Area' value={locationArea} onChangeText={text => setLocationArea(text)} style={styles.inputField} />
+					</View>
 				</View>
-			</View>
-			<View>
-				<Text style={{marginHorizontal: 20}}>{progress} of 5 Answers</Text>
-				<View style={styles.progressContainer}>
-					<View style={styles.progressOne}></View>
-					{progress == 2 && 
+				<View style={{justifyContent: 'flex-end'}}>
+					<Text style={{marginHorizontal: 20}}>{progress} of 5 Answers</Text>
+					<View style={styles.progressContainer}>
 						<View style={styles.progressOne}></View>
-					}
-					{progress == 1 && 
+						{progress == 2 && 
+							<View style={styles.progressOne}></View>
+						}
+						{progress == 1 && 
+							<View style={styles.progressOthers}></View>
+						}
 						<View style={styles.progressOthers}></View>
-					}
-					<View style={styles.progressOthers}></View>
-					<View style={styles.progressOthers}></View>
-					<View style={styles.progressOthers}></View>
+						<View style={styles.progressOthers}></View>
+						<View style={styles.progressOthers}></View>
+					</View>
 				</View>
 			</View>
-		</View>
+		</ScrollView>
   );
 }
 
@@ -82,14 +84,17 @@ const styles = StyleSheet.create({
 	container: {
     flex: 1,
     justifyContent: 'flex-start',
-		alignItems: 'stretch',
+		// alignItems: '',
 		margin: 20,
+		backgroundColor: 'white',
+		zIndex: 1
   },
 	column: {
 		flex: 1,
 		justifyContent: 'space-around',
 		paddingVertical: '10%',
-		backgroundColor: 'white'
+		backgroundColor: 'white',
+		height: 540
 	},
 	optionContianer: {
 		flex: 1,
@@ -116,6 +121,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		flexDirection: 'row',
 		backgroundColor: '#c2d5f5',
+		zIndex: -1
 	},
 	progressOne: {
 		backgroundColor: '#053095',

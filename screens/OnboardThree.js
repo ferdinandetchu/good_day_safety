@@ -1,5 +1,5 @@
 
-import { ActivityIndicator, StyleSheet, TouchableOpacity, FlatList, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, TouchableOpacity, FlatList, Text, View, } from 'react-native';
 import React, {useState, useEffect, useContext} from 'react';
 import { UserContext, IsLoading } from '../App'
 

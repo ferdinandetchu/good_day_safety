@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, TouchableOpacity, ActivityIndicator, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, ActivityIndicator, View, ScrollView } from 'react-native';
 import React, {useState, useContext, useEffect} from 'react';
 import { IsLoading, UserContext } from '../App'
 
@@ -49,37 +49,39 @@ export default function OnboardOne({navigation}) {
   }, [progress]);
 
   return (
-		<View style={styles.column}>
-			<View style={styles.container}>
-				<Text>1. Can you make this a <Text style={{fontWeight: 'bold'}}>SAFE</Text> condition? *</Text>
-				<Text style={{fontSize: 12, margin: 10, color: 'grey', paddingTop: 10}}>If no please make inaccessible to other and proceed with your report</Text>
+		<ScrollView>
+			<View style={styles.column}>
+				<View style={styles.container}>
+					<Text>1. Can you make this a <Text style={{fontWeight: 'bold'}}>SAFE</Text> condition? *</Text>
+					<Text style={{fontSize: 12, margin: 10, color: 'grey', paddingTop: 10}}>If no please make inaccessible to other and proceed with your report</Text>
 
-				{isLoading && <ActivityIndicator color={'#053095'}/> }
+					{isLoading && <ActivityIndicator color={'#053095'}/> }
+					<View>
+						<TouchableOpacity onPress={() => handelSelection(true)}>
+							<Text style={isSafe ? styles.slected : styles.optionContianer}>Yes</Text>
+						</TouchableOpacity>
+						<TouchableOpacity onPress={() => handelSelection(false)}>
+							<Text style={isNotSafe ? styles.slected : styles.optionContianer}>No</Text>
+						</TouchableOpacity>
+					</View>
+				</View>
 				<View>
-					<TouchableOpacity onPress={() => handelSelection(true)}>
-						<Text style={isSafe ? styles.slected : styles.optionContianer}>Yes</Text>
-					</TouchableOpacity>
-					<TouchableOpacity onPress={() => handelSelection(false)}>
-						<Text style={isNotSafe ? styles.slected : styles.optionContianer}>No</Text>
-					</TouchableOpacity>
-				</View>
-			</View>
-			<View>
-				<Text style={{marginHorizontal: 20}}>{progress} of 5 Answers</Text>
-				<View style={styles.progressContainer}>
-					{progress > 0 && 
-						<View style={styles.progressOne}></View>
-					}
-					{!progress > 0 && 
+					<Text style={{marginHorizontal: 20}}>{progress} of 5 Answers</Text>
+					<View style={styles.progressContainer}>
+						{progress > 0 && 
+							<View style={styles.progressOne}></View>
+						}
+						{!progress > 0 && 
+							<View style={styles.progressOthers}></View>
+						}
 						<View style={styles.progressOthers}></View>
-					}
-					<View style={styles.progressOthers}></View>
-					<View style={styles.progressOthers}></View>
-					<View style={styles.progressOthers}></View>
-					<View style={styles.progressOthers}></View>
+						<View style={styles.progressOthers}></View>
+						<View style={styles.progressOthers}></View>
+						<View style={styles.progressOthers}></View>
+					</View>
 				</View>
 			</View>
-		</View>
+		</ScrollView>
   );
 }
 
@@ -94,7 +96,8 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'space-around',
 		paddingVertical: '10%',
-		backgroundColor: 'white'
+		backgroundColor: 'white',
+		height: 540
 	},
 	optionContianer: {
 		backgroundColor: '#3e62cd',

@@ -1,6 +1,10 @@
 
 import { StyleSheet, ScrollView, Text, View, Modal, TouchableOpacity} from 'react-native';
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext} from 'react'
+import { IsLoading, UserContext } from '../App'
+
+import { getAuth, deleteUser } from "firebase/auth";
+import { app } from '../firebaseConfig.js'
 
 export default function Settings ({navigation}) {
 	const [inviteId, setinviteId] = useState(false);
@@ -9,6 +13,10 @@ export default function Settings ({navigation}) {
 	const [moduleMan, setmoduleMan] = useState(false)
 	const [emailMan, setemailMan] = useState(false)
 	const [userMan, setuserMan] =useState(false)
+
+	const {isLoading, setIsLoading} = useContext(IsLoading)
+
+
 	function toggelInvite () {
 		if(inviteId){
 			setinviteId(false)
@@ -57,6 +65,22 @@ export default function Settings ({navigation}) {
 		}
 	}
 
+	const handelDeleteEmail = () => {
+		setIsLoading(true)
+    const auth = getAuth(app);
+		const user = auth.currentUser;
+
+		deleteUser(user).then(() => {
+			alert('Your account has been deleted')
+			navigation.navigate('Signup')
+			// User deleted.
+		}).catch((error) => {
+			alert(error)
+			// An error ocurred
+			// ...
+		});
+	}
+
 	useEffect(() => {
     // Use `setOptions` to update the button that we previously specified
     // Now the button includes an `onPress` handler to update the count
@@ -78,9 +102,15 @@ export default function Settings ({navigation}) {
 					</TouchableOpacity>
 					{ inviteId &&
 						<View>
-							<Text style={styles.cardViewText}>Create ID</Text>
-							<Text style={styles.cardViewText}>Search ID</Text>
-							<Text style={styles.cardViewText}>Delete ID</Text>
+							<TouchableOpacity onPress={() => navigation.navigate('CreateId')}>
+								<Text style={styles.cardViewText}>Create ID</Text>
+							</TouchableOpacity>
+							<TouchableOpacity onPress={() => navigation.navigate('SearchId')}>
+								<Text style={styles.cardViewText}>Search ID</Text>
+							</TouchableOpacity>
+							<TouchableOpacity onPress={() => navigation.navigate('DeleteId')}>
+								<Text style={styles.cardViewText}>Delete ID</Text>
+							</TouchableOpacity>
 						</View>
 					}
 				</View>
@@ -91,9 +121,15 @@ export default function Settings ({navigation}) {
 					</TouchableOpacity>
 					{ emailMan &&
 						<View>
-							<Text style={styles.cardViewText}>Create Email</Text>
-							<Text style={styles.cardViewText}>Cahnge Email</Text>
-							<Text style={styles.cardViewText}>Delete Email</Text>
+							<TouchableOpacity onPress={() => navigation.navigate('ChangeEmail')}>
+								<Text style={styles.cardViewText}>Change Email</Text>
+							</TouchableOpacity>
+							<TouchableOpacity onPress={() => navigation.navigate('ChangePassword')}>
+								<Text style={styles.cardViewText}>Change Password</Text>
+							</TouchableOpacity>
+							<TouchableOpacity onPress={handelDeleteEmail}>
+								<	Text style={styles.cardViewText}>Delete Email</Text>
+							</TouchableOpacity>
 						</View>
 					}
 				</View>

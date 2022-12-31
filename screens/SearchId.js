@@ -3,53 +3,57 @@ import { ActivityIndicator, StyleSheet, ScrollView, TouchableOpacity, Text, Text
 import { useState, useContext } from 'react';
 import { IsLoading, UserContext } from '../App'
 
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getFirestore,  collection, getDocs } from "firebase/firestore";
 import { app } from '../firebaseConfig.js'
 
-export default function ChangeEmail({navigation}) {
+let usersData = [];
+
+export default function SearchId({navigation}) {
   const {user, setUser} = useContext(UserContext)
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [inviteCode, setInviteCode] = useState('')
+	const [searchCode, setSearchCode] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
 
   const {isLoading, setIsLoading} = useContext(IsLoading)
 
-  const handelSignUp = () => {
+  const handelSearch = async () => {
     setIsLoading(true)
-    const auth = getAuth(app);
-    createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      alert('Admin Added')
-      setIsLoading(false)
-      navigation.navigate('Signin')
-      setErrorMessage('');
-      // ...
-    })
-    .catch((error) => {
-      setIsLoading(false)
-      let errorCode = error.code;
-      errorCode = error.code.split('/')
-      setErrorMessage(errorCode[1]);
-      console.log(error.code)
-    });
+
+		 // Initialize Cloud Firestore and get a reference to the service
+		 const db =  await getFirestore(app);
+		try {
+			const querySnapshot = await getDocs(collection(db, "Users"));
+			await querySnapshot.forEach((doc) => {usersData.push(doc.id)});
+
+			let isCode = usersData.includes(inviteCode)
+			if(isCode){
+				setSearchCode(inviteCode)
+				setIsLoading(false)
+			}else {
+				setSearchCode('Invite Code not Found')
+				setIsLoading(false)
+				// console.log(usersData)
+			}
+		} catch (error) {
+			setIsLoading(false)
+			// console.log(error)
+		}
   }
   
   return (
 		<ScrollView style={{backgroundColor: 'white',}}>
       <View style={{justifyContent: 'center'}}>
 			<View style={styles.container}>
-				<Text style={styles.topText}>GOOD DAY SAFETY APPLICATION!</Text>
         {isLoading && <ActivityIndicator color={'#053095'}/> }
         {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text> }
-				<TextInput keyboardType="email-address" style={styles.textInput} value={email} placeholder="Email" onChangeText={tetx => setEmail(tetx)} />
-				<TextInput secureTextEntry style={styles.textInput} value={password} placeholder="Password" onChangeText={tetx => setPassword(tetx)} />
-				<TouchableOpacity style={styles.loginBtn} onPress={handelSignUp}>
-          <Text style={{color: "white"}}>SIGNUP</Text>
+				<TextInput keyboardType="number-pad" style={styles.textInput} value={inviteCode} placeholder="Search invite" onChangeText={tetx => setInviteCode(tetx)} />
+				<TouchableOpacity style={styles.loginBtn} onPress={handelSearch}>
+          <Text style={{color: "white"}}>Search</Text>
 				</TouchableOpacity>
-        <TouchableOpacity style={styles.signUpBtn} onPress={() => navigation.navigate('Signin')}>
-          <Text style={{color: "white"}}>LOGIN</Text>
-				</TouchableOpacity>
+				{searchCode && 
+					<Text style={{paddingVertical: 5, borderWidth: 1, width: '100%', marginVertical: 10, borderRadius: 4, borderColor: '#3e62cd', textAlign: 'center'}}>{searchCode}</Text>
+				}
 			</View>
       </View>
 		</ScrollView>
@@ -105,14 +109,5 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     color: 'white'
     // width: 200
-  },
-  signUpBtn: {
-    backgroundColor: '#3e62cd',
-    textAlign: 'center',
-    borderRadius: 30,
-    paddingHorizontal: 120,
-    paddingVertical: 10,
-    color: 'white',
-    marginVertical: 6,
-  },
+  }
 });

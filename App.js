@@ -23,6 +23,11 @@ import OnboardFour from './screens/OnboardFour'
 import OnboardFive from './screens/OnboardFive'
 import FinalPage from './screens/FinalPage'
 import Welcome from './screens/Welcome'
+import CreateId from './screens/CreateId.js';
+import SearchId from './screens/SearchId.js';
+import DeleteId from './screens/DeleteId.js';
+import ChangeEmail from './screens/ChangeEmail.js';
+import ChangePassword from './screens/ChangePassword';
 
 const Stack = createNativeStackNavigator();
 
@@ -134,6 +139,41 @@ export default function App() {
                 component={Settings}
                 options={{ 
                   title: 'Setting',
+                }}
+              />
+              <Stack.Screen
+                name="CreateId"
+                component={CreateId}
+                options={{ 
+                  title: 'Create Invite Code',
+                }}
+              />
+              <Stack.Screen
+                name="SearchId"
+                component={SearchId}
+                options={{ 
+                  title: 'Search Invite Code',
+                }}
+              />
+              <Stack.Screen
+                name="DeleteId"
+                component={DeleteId}
+                options={{ 
+                  title: 'Delete Invite Code',
+                }}
+              />
+              <Stack.Screen
+                name="ChangeEmail"
+                component={ChangeEmail}
+                options={{ 
+                  title: 'Change Email',
+                }}
+              />
+              <Stack.Screen
+                name="ChangePassword"
+                component={ChangePassword}
+                options={{ 
+                  title: 'Change Password',
                 }}
               />
             </Stack.Navigator>

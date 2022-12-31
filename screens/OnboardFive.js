@@ -1,4 +1,4 @@
-import { ActivityIndicator, StyleSheet, TouchableOpacity, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, TouchableOpacity, Text, TextInput, View, ScrollView } from 'react-native';
 
 import { useState, useContext, useEffect} from 'react';
 import { UserContext, IsLoading } from '../App'
@@ -42,35 +42,37 @@ export default function OnboardFive({navigation}) {
   }, [progress]);
 
   return (
-		<View style={styles.column}>
-			<View style={styles.container}>
-				<Text style={{marginVertical: 10}}>5. Please include any necessary comments you may have about the unsafe condition?</Text>
-				<View>
-					{isLoading && <ActivityIndicator color={'#053095'}/> }
+		<ScrollView>
+			<View style={styles.column}>
+				<View style={styles.container}>
+					<Text style={{marginVertical: 10}}>5. Please include any necessary comments you may have about the unsafe condition?</Text>
 					<View>
-						<TextInput value={comments} onChangeText={text => setComments(text)} style={styles.textInput} maxLength={250} multiline />
-					</View>
-					<View style={{flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}>
-						<Text style={{color: 'grey'}}>250 Characters Max</Text>
+						{isLoading && <ActivityIndicator color={'#053095'}/> }
+						<View>
+							<TextInput value={comments} onChangeText={text => setComments(text)} style={styles.textInput} maxLength={250} multiline />
+						</View>
+						<View style={{flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}>
+							<Text style={{color: 'grey'}}>250 Characters Max</Text>
+						</View>
 					</View>
 				</View>
-			</View>
-			<View>
-				<Text style={{marginHorizontal: 10}}>{progress} of 5 Answers</Text>
-				<View style={styles.progressContainer}>
-				<View style={styles.progressOne}></View>
+				<View>
+					<Text style={{marginHorizontal: 10}}>{progress} of 5 Answers</Text>
+					<View style={styles.progressContainer}>
 					<View style={styles.progressOne}></View>
-					<View style={styles.progressOne}></View>
-					<View style={styles.progressOne}></View>
-					{progress == 5 && 
 						<View style={styles.progressOne}></View>
-					}
-					{progress == 4 && 
-						<View style={styles.progressOthers}></View>
-					}
+						<View style={styles.progressOne}></View>
+						<View style={styles.progressOne}></View>
+						{progress == 5 && 
+							<View style={styles.progressOne}></View>
+						}
+						{progress == 4 && 
+							<View style={styles.progressOthers}></View>
+						}
+					</View>
 				</View>
 			</View>
-		</View>
+		</ScrollView>
   );
 }
 
@@ -85,7 +87,8 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'space-around',
 		paddingVertical: '10%',
-		backgroundColor: 'white'
+		backgroundColor: 'white',
+		height: 530
 	},
 	optionContianer: {
 		flex: 1,

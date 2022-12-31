@@ -5,7 +5,6 @@ import { useState, useContext } from 'react';
 import { IsLoading, UserContext } from '../App'
 
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { app } from '../firebaseConfig.js'
 
 export default function Signin({navigation}) {
@@ -25,6 +24,7 @@ export default function Signin({navigation}) {
       // Signed in 
       setUser(userCredential.user);
       setIsLoading(false)
+      setErrorMessage('')
       navigation.navigate('Module')
       // ...
     })
@@ -48,6 +48,9 @@ export default function Signin({navigation}) {
 				<TextInput secureTextEntry style={styles.textInput} value={password} placeholder="Password" onChangeText={tetx => setPassword(tetx)} />
 				<TouchableOpacity style={styles.loginBtn} onPress={handelSignIn}>
           <Text style={{color: "white"}}>LOGIN</Text>
+				</TouchableOpacity>
+        <TouchableOpacity style={styles.signUpBtn} onPress={() => navigation.navigate('Signup')}>
+          <Text style={{color: "white"}}>SIGNUP</Text>
 				</TouchableOpacity>
 				<Text style={styles.orText}>OR</Text>
 				<Text>Enter Invitation Code</Text>
@@ -91,10 +94,15 @@ const styles = StyleSheet.create({
     margin: 10,
     borderRadius: 10
   },
-  signUpBtn: {
-    marginTop: 30,
-    width: '50%',
-  },
+    signUpBtn: {
+      backgroundColor: '#3e62cd',
+      textAlign: 'center',
+      borderRadius: 30,
+      paddingHorizontal: 120,
+      paddingVertical: 10,
+      color: 'white',
+      marginVertical: 6,
+    },
   orText: {
     marginTop: 20,
     fontWeight: 'bold',

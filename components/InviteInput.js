@@ -37,11 +37,16 @@ function InviteInput(prop) {
           const querySnapshot = (getDoc(doc(db, "Users", value)))
           .then((doc) => {
             if(doc.data()){
-              setUser({id: doc.id, data: doc.data()})
-              prop.navigation.navigate('OnboardOne')
-              setIsLoading(false)
+              if(!doc.data().condition){
+                setUser({id: doc.id, data: doc.data()})
+                prop.navigation.navigate('OnboardOne')
+                setIsLoading(false)
+              }else{
+                setCodeError('Invite code already used')
+                setIsLoading(false)
+              }
             }else{
-              setCodeError('Invalide invite code')
+              setCodeError('Invalid invite code')
               setIsLoading(false)
             }
           });

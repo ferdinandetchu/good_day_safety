@@ -1,28 +1,29 @@
 
 import { ActivityIndicator, StyleSheet, ScrollView, TouchableOpacity, Text, TextInput, View } from 'react-native';
 import { useState, useContext } from 'react';
-import { IsLoading, UserContext } from '../App'
+import { IsLoading } from '../App'
 
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, updatePassword } from "firebase/auth";
 import { app } from '../firebaseConfig.js'
 
-export default function ChangeEmail({navigation}) {
-  const {user, setUser} = useContext(UserContext)
+export default function ChangePassword({navigation}) {
 
-  const [email, setEmail] = useState('')
+  // const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
 
   const {isLoading, setIsLoading} = useContext(IsLoading)
 
-  const handelSignUp = () => {
+  const handelChangePassword = () => {
     setIsLoading(true)
     const auth = getAuth(app);
-    createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      alert('Admin Added')
-      setIsLoading(false)
+		const user = auth.currentUser;
+
+    updatePassword(user, password)
+    .then(() => {
+      alert('Password Updated')
       navigation.navigate('Signin')
+      setIsLoading(false)
       setErrorMessage('');
       // ...
     })
@@ -39,16 +40,12 @@ export default function ChangeEmail({navigation}) {
 		<ScrollView style={{backgroundColor: 'white',}}>
       <View style={{justifyContent: 'center'}}>
 			<View style={styles.container}>
-				<Text style={styles.topText}>GOOD DAY SAFETY APPLICATION!</Text>
         {isLoading && <ActivityIndicator color={'#053095'}/> }
         {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text> }
-				<TextInput keyboardType="email-address" style={styles.textInput} value={email} placeholder="Email" onChangeText={tetx => setEmail(tetx)} />
-				<TextInput secureTextEntry style={styles.textInput} value={password} placeholder="Password" onChangeText={tetx => setPassword(tetx)} />
-				<TouchableOpacity style={styles.loginBtn} onPress={handelSignUp}>
-          <Text style={{color: "white"}}>SIGNUP</Text>
-				</TouchableOpacity>
-        <TouchableOpacity style={styles.signUpBtn} onPress={() => navigation.navigate('Signin')}>
-          <Text style={{color: "white"}}>LOGIN</Text>
+				{/* <TextInput keyboardType="email-address" style={styles.textInput} value={email} placeholder="New Email" onChangeText={tetx => setEmail(tetx)} /> */}
+				<TextInput secureTextEntry style={styles.textInput} value={password} placeholder="New Password" onChangeText={tetx => setPassword(tetx)} />
+				<TouchableOpacity style={styles.loginBtn} onPress={handelChangePassword}>
+          <Text style={{color: "white", textAlign: 'center'}}>Add</Text>
 				</TouchableOpacity>
 			</View>
       </View>
@@ -58,18 +55,17 @@ export default function ChangeEmail({navigation}) {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: 35,
+    flex: 1,
+    justifyContent: 'flex-start',
+		alignItems: 'stretch',
+		margin: 20,
   },
-  topText: {
-    color: '#053095',
-    textAlign: 'center',
-    fontSize: 25,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    marginTop: 80
-  },
+	column: {
+		flex: 1,
+		justifyContent: 'space-around',
+		paddingVertical: '10%',
+		backgroundColor: 'white'
+	},
   textInput: {
     borderWidth: 1,
     borderColor: '#3e62cd',
@@ -89,14 +85,6 @@ const styles = StyleSheet.create({
     margin: 10,
     borderRadius: 10
   },
-  signUpBtn: {
-    marginTop: 30,
-    width: '50%',
-  },
-  orText: {
-    marginTop: 20,
-    fontWeight: 'bold',
-  },
   loginBtn: {
     backgroundColor: '#053095',
     textAlign: 'center',
@@ -105,14 +93,5 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     color: 'white'
     // width: 200
-  },
-  signUpBtn: {
-    backgroundColor: '#3e62cd',
-    textAlign: 'center',
-    borderRadius: 30,
-    paddingHorizontal: 120,
-    paddingVertical: 10,
-    color: 'white',
-    marginVertical: 6,
-  },
+  }
 });
