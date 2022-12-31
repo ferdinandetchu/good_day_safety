@@ -21,11 +21,13 @@ export default function CreateId({navigation}) {
 
     let minm = 100000;
     let maxm = 999999;
-		let ivCode = Math.floor(Math.random() * (maxm - minm + 1)) + minm
-		let data = {comments: '', condition: '', favorite: false, photo: '', location: {projectName: '', floorLevel: '', locationArea: ''}, }
+		const ivCode = Math.floor(Math.random() * (maxm - minm + 1)) + minm
+		let data = {user: [user.email], comments: '', condition: '', favorite: false, photo: '', location: {projectName: '', floorLevel: '', locationArea: ''}, }
+
+    // console(auth.currentUser)
 		try {
 			await setDoc(doc(db, "Users", `${ivCode}`), data);
-			setInviteCode(Math.floor(Math.random() * (maxm - minm + 1)) + minm);
+			setInviteCode(ivCode);
 			setIsLoading(false)
 			alert('New Invite Created')
 		} catch (e) {

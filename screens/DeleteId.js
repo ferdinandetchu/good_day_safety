@@ -28,6 +28,7 @@ export default function DeleteId({navigation}) {
 			delete usersData[i]
 			// console.log(usersData)
 			alert('Code Deleted')
+			navigation.navigate('Settings')
 			setIsDeleting(true)
 			setIsLoading(false)
 		} catch (error) {
@@ -42,7 +43,7 @@ export default function DeleteId({navigation}) {
 		 const db =  await getFirestore(app);
 		try {
 			const querySnapshot = await getDocs(collection(db, "Users"));
-			await querySnapshot.forEach((doc) => {usersData.push(doc.id)});
+			await querySnapshot.forEach((doc) => {usersData.push({data: doc.data(), id: doc.id})});
 
 			setSearchCode(usersData)
 			console.log(searchCode)
@@ -71,11 +72,16 @@ export default function DeleteId({navigation}) {
 						renderItem={({item, index}) => (
 							<View>
 								{item != undefined &&
-									<View style={styles.listItem}>
-										<Text style={{textAlign: 'center'}}>{item}</Text>
-										<TouchableOpacity onPress={() => handelDelete(item, index)}>
-											<Text style={styles.deletBtn}>Delete</Text>
-										</TouchableOpacity>
+									<View>
+										{item.data.user.includes(user.email) &&
+											<View style={styles.listItem}>
+												<Text style={{textAlign: 'center'}}>{item.id}</Text>
+												<TouchableOpacity onPress={() => handelDelete(item.id, index)}>
+													<Text style={styles.deletBtn}>Delete</Text>
+												</TouchableOpacity>
+												{/* {console.log(item.data.user)} */}
+											</View>
+										}
 									</View>
 								}
 							</View>

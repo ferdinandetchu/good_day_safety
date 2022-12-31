@@ -3,13 +3,17 @@ import { useState, useContext, useEffect } from 'react';
 import { StyleSheet, ActivityIndicator, TouchableOpacity, Text, View, FlatList} from 'react-native';
 
 
-import { IsLoading, ReportContext } from '../App'
+import { UserContext, IsLoading, ReportContext, CurrentReportIdContext } from '../App'
 // import { async } from '@firebase/util';
 
 export default function Module({navigation}) {
 	const {data, setReports} = useContext(ReportContext)
 	const {isLoading, setIsLoading} = useContext(IsLoading)
+	const {user, setUser} = useContext(UserContext)
 
+	const {currentReportId, setCurrentReportId} = useContext(CurrentReportIdContext);
+
+	console.log(user.email)
 	useEffect(() => {
     // Use `setOptions` to update the button that we previously specified
     // Now the button includes an `onPress` handler to update the count
@@ -34,10 +38,15 @@ export default function Module({navigation}) {
 							numColumns={2}
 							renderItem={({item}) => (
 								<View>
-									{item.data.location.projectName && 
-										<TouchableOpacity style={styles.report} onPress={() => navigation.navigate('Module')} >
-											<Text style={styles.repportText}>{item.data.location.projectName}</Text>
-										</TouchableOpacity>
+									{item.data.user.includes(user.email) &&
+										<View>
+											{item.data.location.projectName && 
+												<TouchableOpacity style={styles.report} onPress={() => {navigation.navigate('ViewReport'); setCurrentReportId(item.id)}} >
+													<Text style={styles.repportText}>{item.data.location.projectName}</Text>
+													{/* {console.log(item.data.user.includes(user.email))} */}
+												</TouchableOpacity>
+											}
+										</View>
 									}
 								</View>
 							)}

@@ -19,6 +19,7 @@ export default function ChangePassword({navigation}) {
     const auth = getAuth(app);
 		const user = auth.currentUser;
 
+    console.log(user)
     updatePassword(user, password)
     .then(() => {
       alert('Password Updated')

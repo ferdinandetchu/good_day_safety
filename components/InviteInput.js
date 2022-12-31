@@ -39,9 +39,10 @@ function InviteInput(prop) {
             if(doc.data()){
               if(!doc.data().condition){
                 setUser({id: doc.id, data: doc.data()})
-                prop.navigation.navigate('OnboardOne')
                 setCodeError('')
                 setIsLoading(false)
+                prop.navigation.navigate('OnboardOne')
+                
               }else{
                 setCodeError('Invite code already used')
                 setIsLoading(false)

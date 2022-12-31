@@ -128,7 +128,7 @@ export default function Settings ({navigation}) {
 								<Text style={styles.cardViewText}>Change Password</Text>
 							</TouchableOpacity>
 							<TouchableOpacity onPress={handelDeleteEmail}>
-								<	Text style={styles.cardViewText}>Delete Email</Text>
+								<	Text style={styles.cardViewText}>Delete Account</Text>
 							</TouchableOpacity>
 						</View>
 					}

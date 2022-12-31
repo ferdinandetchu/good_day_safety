@@ -26,7 +26,8 @@ export default function SearchId({navigation}) {
 			const querySnapshot = await getDocs(collection(db, "Users"));
 			await querySnapshot.forEach((doc) => {usersData.push(doc.id)});
 
-			let isCode = usersData.includes(inviteCode)
+			let isCode = usersData.includes(inviteCode);
+      console.log(iUser)
 			if(isCode){
 				setSearchCode(inviteCode)
 				setIsLoading(false)
